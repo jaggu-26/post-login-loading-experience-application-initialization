@@ -66,6 +66,28 @@ html, body {
   0%,100% { transform:scale(1);    filter:drop-shadow(0 6px 14px rgba(24,82,254,0.12)); }
   50%     { transform:scale(1.05); filter:drop-shadow(0 10px 24px rgba(24,82,254,0.28)); }
 }
+@keyframes gMarkBreathe {
+  0%     { transform:scale(1);    filter:drop-shadow(0 4px 14px rgba(24,82,254,0.10)); }
+  28%    { transform:scale(1.07); filter:drop-shadow(0 12px 26px rgba(24,82,254,0.34)); }
+  42%    { transform:scale(1.02); filter:drop-shadow(0 7px 17px rgba(24,82,254,0.18)); }
+  55%    { transform:scale(1.05); filter:drop-shadow(0 10px 22px rgba(24,82,254,0.28)); }
+  72%    { transform:scale(1.01); filter:drop-shadow(0 5px 15px rgba(24,82,254,0.13)); }
+  100%   { transform:scale(1);    filter:drop-shadow(0 4px 14px rgba(24,82,254,0.10)); }
+}
+@keyframes gMarkFill {
+  0%    { clip-path:circle(0% at 50% 50%);   opacity:1; }
+  10%   { clip-path:circle(0% at 50% 50%);   opacity:1; animation-timing-function:cubic-bezier(0.22,1.3,0.36,1); }
+  62%   { clip-path:circle(100% at 50% 50%); opacity:1; animation-timing-function:linear; }
+  88%   { clip-path:circle(100% at 50% 50%); opacity:1; }
+  100%  { clip-path:circle(100% at 50% 50%); opacity:0; }
+}
+@keyframes gShimmerRect {
+  0%    { opacity:0; transform:translateX(0px); }
+  63%   { opacity:0; transform:translateX(0px); }
+  67%   { opacity:1; transform:translateX(20px); }
+  78%   { opacity:0; transform:translateX(85px); }
+  100%  { opacity:0; transform:translateX(0px); }
+}
 
 /* ── Mark visibility switch ── */
 .mark-wrap         { display:none; }
@@ -96,41 +118,59 @@ html, body {
   display:inline-block;
   transform-box:fill-box;
   transform-origin:center;
+  animation:coWrapPop 4.2s linear infinite;
 }
 .co-svg { overflow:visible; display:block; }
-.co-ghost-fill {
-  fill:#1852FE;
-  opacity:0.10;
-}
+.co-ghost-fill { fill:#1852FE; opacity:0.10; }
 .co-tracer-path {
-  fill:none;
-  stroke:#1852FE;
-  stroke-width:1.8;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  stroke-dasharray:600;
-  stroke-dashoffset:600;
-  animation:coTracePath 2.8s cubic-bezier(.4,0,.2,1) infinite;
+  fill:none; stroke:#1852FE; stroke-width:2.4;
+  stroke-linecap:round; stroke-linejoin:round;
+  stroke-dasharray:600; stroke-dashoffset:600;
+  animation:coTracePath 4.2s linear infinite;
 }
-.co-fill-reveal { fill:#1852FE; clip-path:inset(100% 0 0 0); animation:coFillReveal 2.8s cubic-bezier(.4,0,.2,1) infinite; }
+.co-fill-reveal { fill:#1852FE; clip-path:polygon(0% -5%,0% -5%,0% 105%,0% 105%); animation:coFillReveal 4.2s linear infinite; }
+.co-shimmer-rect { opacity:0; animation:coShimmerRect 4.2s linear infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .co-tracer-path { stroke-dashoffset:0; }
-  .co-fill-reveal { clip-path:inset(0 0 0 0); opacity:1; }
+  .co-anim-wrap { animation:none; }
+  .co-tracer-path { stroke-dashoffset:0; opacity:0; animation:none; }
+  .co-fill-reveal { clip-path:polygon(0% -5%,107% -5%,107% 105%,0% 105%); animation:none; }
+  .co-shimmer-rect { display:none; }
 }
 @keyframes coTracePath {
-  0%   { stroke-dashoffset:600; opacity:0; }
-  4%   { stroke-dashoffset:600; opacity:1; }
-  50%  { stroke-dashoffset:0;   opacity:1; }
-  60%  { stroke-dashoffset:0;   opacity:0; }
-  100% { stroke-dashoffset:600; opacity:0; }
+  0%    { stroke-dashoffset:600; opacity:0;   filter:drop-shadow(0 0 0px rgba(24,82,254,0)); }
+  3%    { stroke-dashoffset:600; opacity:1;   filter:drop-shadow(0 0 0px rgba(24,82,254,0)); animation-timing-function:linear; }
+  54%   { stroke-dashoffset:0;   opacity:1;   filter:drop-shadow(0 0 8px rgba(24,82,254,0.60)); }
+  63%   { stroke-dashoffset:0;   opacity:0;   filter:drop-shadow(0 0 0px rgba(24,82,254,0)); }
+  100%  { stroke-dashoffset:600; opacity:0;   filter:drop-shadow(0 0 0px rgba(24,82,254,0)); }
 }
 @keyframes coFillReveal {
-  0%   { clip-path:inset(100% 0 0 0); }
-  4%   { clip-path:inset(100% 0 0 0); }
-  60%  { clip-path:inset(0 0 0 0); }
-  96%  { clip-path:inset(0 0 0 0); }
-  97%  { clip-path:inset(100% 0 0 0); }
-  100% { clip-path:inset(100% 0 0 0); }
+  /* collapsed at left edge */
+  0%    { clip-path:polygon(0% -5%, 0%  -5%, 0%   105%, 0%   105%); }
+  62%   { clip-path:polygon(0% -5%, 0%  -5%, 0%   105%, 0%   105%); animation-timing-function:linear; }
+  /* Phase 1 — brush fills 'c', diagonal leading edge sweeps right */
+  71%   { clip-path:polygon(0% -5%, 52% -5%, 44%  105%, 0%   105%); }
+  /* beat — pause at the c→o connection point */
+  73%   { clip-path:polygon(0% -5%, 54% -5%, 46%  105%, 0%   105%); animation-timing-function:cubic-bezier(0.34,1.5,0.64,1); }
+  /* Phase 2 — spring into 'o', diagonal levels off as it snaps full */
+  84%   { clip-path:polygon(0% -5%, 107% -5%, 107% 105%, 0%   105%); }
+  93%   { clip-path:polygon(0% -5%, 107% -5%, 107% 105%, 0%   105%); }
+  96%   { clip-path:polygon(0% -5%, 0%   -5%, 0%   105%, 0%   105%); }
+  100%  { clip-path:polygon(0% -5%, 0%   -5%, 0%   105%, 0%   105%); }
+}
+@keyframes coWrapPop {
+  0%    { transform:scale(1); }
+  83%   { transform:scale(1); }
+  88%   { transform:scale(1.04); }
+  92%   { transform:scale(0.975); }
+  95%   { transform:scale(1); }
+  100%  { transform:scale(1); }
+}
+@keyframes coShimmerRect {
+  0%    { opacity:0; transform:translateX(0px); }
+  84%   { opacity:0; transform:translateX(0px); }
+  88%   { opacity:1; transform:translateX(25px); }
+  94%   { opacity:0; transform:translateX(120px); }
+  100%  { opacity:0; transform:translateX(0px); }
 }
 
 /* ── Option 3: 'g' mark ── */
@@ -141,13 +181,17 @@ html, body {
   object-fit:contain; object-position:center;
 }
 .gmark .g-ghost { opacity:0.14; }
-.gmark .g-fill  { clip-path:inset(100% 0 0 0); }
+.gmark .g-fill  { clip-path:circle(0% at 50% 50%); }
+.g-shimmer-svg  { display:block; position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
+.g-shimmer-rect { opacity:0; }
 @media (prefers-reduced-motion: no-preference) {
-  .gmark { animation:gBreathe 2.4s ease-in-out infinite; }
-  .gmark .g-fill { animation:gFill 1.8s cubic-bezier(.4,0,.2,1) infinite; }
+  .gmark { animation:gMarkBreathe 2.8s ease-in-out infinite; }
+  .gmark .g-fill { animation:gMarkFill 2.4s cubic-bezier(.4,0,.2,1) infinite; }
+  .g-shimmer-rect { animation:gShimmerRect 2.4s linear infinite; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .gmark .g-fill { clip-path:inset(0 0 0 0); }
+  .gmark .g-fill { clip-path:circle(100% at 50% 50%); }
+  .g-shimmer-rect { display:none; }
 }
 
 /* ── Shared loader text ── */
@@ -270,15 +314,22 @@ html, body {
       <div class="co-anim-wrap" aria-hidden="true">
         <svg class="co-svg" viewBox="0 0 46 25" style="height:40px;width:auto" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <!-- clip equal to the 'co' shape: keeps the stroke inside the letterform so the silhouette never grows -->
             <clipPath id="coClip">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M18.7826 6.05665C18.5675 6.31791 18.3605 6.52635 18.1607 6.68035C17.961 6.82622 17.6774 6.90302 17.3092 6.90302C16.9559 6.90302 16.6415 6.8185 16.3575 6.64907C16.0735 6.48004 15.751 6.29516 15.3982 6.08793C15.0453 5.87949 14.6313 5.6877 14.1556 5.51827C13.68 5.34883 13.0893 5.26432 12.3832 5.26432C11.5085 5.26432 10.7566 5.42563 10.1201 5.74906C9.48327 6.07209 8.95377 6.53367 8.53973 7.13421C8.12568 7.73395 7.81819 8.47305 7.61927 9.34258C7.41954 10.2194 7.31988 11.197 7.31988 12.2892C7.31988 14.5906 7.76512 16.3525 8.64709 17.5913C9.52946 18.8221 10.742 19.4381 12.2916 19.4381H12.2957H12.3074C12.6275 19.4356 17.7933 19.2313 21.3896 8.93138C21.5278 8.32027 21.706 7.73395 21.924 7.17281C22.5147 5.65682 23.3509 4.3635 24.4326 3.30137C25.5147 2.23924 26.8034 1.42416 28.2995 0.854496C29.7952 0.285238 31.453 0 33.2785 0C35.0895 0 36.7392 0.284832 38.228 0.854496C39.7161 1.42416 40.9971 2.23924 42.0642 3.30137C43.1301 4.3635 43.9586 5.65642 44.5497 7.17281C45.1403 8.69612 45.4316 10.3962 45.4316 12.2892C45.4316 14.2054 45.1403 15.9213 44.5497 17.4605C43.9586 18.9923 43.1301 20.2926 42.0642 21.3624C40.9971 22.4319 39.7165 23.2547 38.228 23.832C36.7396 24.409 35.0895 24.7016 33.2785 24.7016C31.453 24.7016 29.7956 24.409 28.2995 23.832C26.803 23.2547 25.5147 22.4319 24.4326 21.3624C23.6673 20.605 23.0247 19.7327 22.5049 18.7449C22.5049 18.7449 21.7198 20.1755 19.8598 21.6639C19.4288 22.0552 18.9848 22.3973 18.529 22.6858C17.7163 23.2096 16.887 23.6252 16.0354 23.9174C15.4861 24.1059 14.9331 24.2595 14.3793 24.3757L14.3756 24.3761C14.0726 24.4395 13.7691 24.4919 13.4653 24.533C12.606 24.6483 11.769 24.702 10.9563 24.702C9.49826 24.702 8.10988 24.4249 6.78228 23.8706C5.45467 23.3168 4.28911 22.5091 3.28398 21.4546C2.27885 20.4011 1.48075 19.1 0.890072 17.5609C0.299393 16.0229 0 14.268 0 12.29C0 10.5668 0.260907 8.9582 0.775016 7.45033C1.28953 5.94938 2.04874 4.64874 3.05346 3.54882C4.05899 2.4485 5.30193 1.57897 6.78268 0.94795C8.26343 0.316931 9.97429 0.000812054 11.923 0.000812054C13.7955 0.000812054 15.4371 0.301084 16.8485 0.909349C18.2604 1.50908 19.5341 2.39405 20.6693 3.55614L18.7826 6.05665ZM33.2785 19.384C34.9205 19.384 36.1331 18.8075 36.9073 17.6454C37.6831 16.4837 38.066 14.7142 38.066 12.336C38.066 9.96628 37.6831 8.20406 36.9073 7.0497C36.1331 5.89574 34.9205 5.31836 33.2785 5.31836C31.5912 5.31836 30.3559 5.89574 29.5732 7.0497C28.7905 8.20406 28.3992 9.96628 28.3992 12.336C28.3992 14.7146 28.7905 16.4837 29.5732 17.6454C30.3555 18.8075 31.5912 19.384 33.2785 19.384Z"/>
             </clipPath>
+          <linearGradient id="coShimmerGrad" x1="0" y1="0.5" x2="1" y2="0.5">
+            <stop offset="0%"   stop-color="white" stop-opacity="0"/>
+            <stop offset="50%"  stop-color="white" stop-opacity="0.7"/>
+            <stop offset="100%" stop-color="white" stop-opacity="0"/>
+          </linearGradient>
           </defs>
-          <!-- animated stroke tracer (clipped to the shape so it never extends the silhouette) -->
+          <!-- ghost: always 15% opacity so letterform weight never changes -->
+          <path class="co-ghost-fill" fill-rule="evenodd" clip-rule="evenodd" d="M18.7826 6.05665C18.5675 6.31791 18.3605 6.52635 18.1607 6.68035C17.961 6.82622 17.6774 6.90302 17.3092 6.90302C16.9559 6.90302 16.6415 6.8185 16.3575 6.64907C16.0735 6.48004 15.751 6.29516 15.3982 6.08793C15.0453 5.87949 14.6313 5.6877 14.1556 5.51827C13.68 5.34883 13.0893 5.26432 12.3832 5.26432C11.5085 5.26432 10.7566 5.42563 10.1201 5.74906C9.48327 6.07209 8.95377 6.53367 8.53973 7.13421C8.12568 7.73395 7.81819 8.47305 7.61927 9.34258C7.41954 10.2194 7.31988 11.197 7.31988 12.2892C7.31988 14.5906 7.76512 16.3525 8.64709 17.5913C9.52946 18.8221 10.742 19.4381 12.2916 19.4381H12.2957H12.3074C12.6275 19.4356 17.7933 19.2313 21.3896 8.93138C21.5278 8.32027 21.706 7.73395 21.924 7.17281C22.5147 5.65682 23.3509 4.3635 24.4326 3.30137C25.5147 2.23924 26.8034 1.42416 28.2995 0.854496C29.7952 0.285238 31.453 0 33.2785 0C35.0895 0 36.7392 0.284832 38.228 0.854496C39.7161 1.42416 40.9971 2.23924 42.0642 3.30137C43.1301 4.3635 43.9586 5.65642 44.5497 7.17281C45.1403 8.69612 45.4316 10.3962 45.4316 12.2892C45.4316 14.2054 45.1403 15.9213 44.5497 17.4605C43.9586 18.9923 43.1301 20.2926 42.0642 21.3624C40.9971 22.4319 39.7165 23.2547 38.228 23.832C36.7396 24.409 35.0895 24.7016 33.2785 24.7016C31.453 24.7016 29.7956 24.409 28.2995 23.832C26.803 23.2547 25.5147 22.4319 24.4326 21.3624C23.6673 20.605 23.0247 19.7327 22.5049 18.7449C22.5049 18.7449 21.7198 20.1755 19.8598 21.6639C19.4288 22.0552 18.9848 22.3973 18.529 22.6858C17.7163 23.2096 16.887 23.6252 16.0354 23.9174C15.4861 24.1059 14.9331 24.2595 14.3793 24.3757L14.3756 24.3761C14.0726 24.4395 13.7691 24.4919 13.4653 24.533C12.606 24.6483 11.769 24.702 10.9563 24.702C9.49826 24.702 8.10988 24.4249 6.78228 23.8706C5.45467 23.3168 4.28911 22.5091 3.28398 21.4546C2.27885 20.4011 1.48075 19.1 0.890072 17.5609C0.299393 16.0229 0 14.268 0 12.29C0 10.5668 0.260907 8.9582 0.775016 7.45033C1.28953 5.94938 2.04874 4.64874 3.05346 3.54882C4.05899 2.4485 5.30193 1.57897 6.78268 0.94795C8.26343 0.316931 9.97429 0.000812054 11.923 0.000812054C13.7955 0.000812054 15.4371 0.301084 16.8485 0.909349C18.2604 1.50908 19.5341 2.39405 20.6693 3.55614L18.7826 6.05665ZM33.2785 19.384C34.9205 19.384 36.1331 18.8075 36.9073 17.6454C37.6831 16.4837 38.066 14.7142 38.066 12.336C38.066 9.96628 37.6831 8.20406 36.9073 7.0497C36.1331 5.89574 34.9205 5.31836 33.2785 5.31836C31.5912 5.31836 30.3559 5.89574 29.5732 7.0497C28.7905 8.20406 28.3992 9.96628 28.3992 12.336C28.3992 14.7146 28.7905 16.4837 29.5732 17.6454C30.3555 18.8075 31.5912 19.384 33.2785 19.384Z"/>
+          <!-- stroke tracer: draws first, clipped inside shape -->
           <path class="co-tracer-path" clip-path="url(#coClip)" fill-rule="evenodd" clip-rule="evenodd" d="M18.7826 6.05665C18.5675 6.31791 18.3605 6.52635 18.1607 6.68035C17.961 6.82622 17.6774 6.90302 17.3092 6.90302C16.9559 6.90302 16.6415 6.8185 16.3575 6.64907C16.0735 6.48004 15.751 6.29516 15.3982 6.08793C15.0453 5.87949 14.6313 5.6877 14.1556 5.51827C13.68 5.34883 13.0893 5.26432 12.3832 5.26432C11.5085 5.26432 10.7566 5.42563 10.1201 5.74906C9.48327 6.07209 8.95377 6.53367 8.53973 7.13421C8.12568 7.73395 7.81819 8.47305 7.61927 9.34258C7.41954 10.2194 7.31988 11.197 7.31988 12.2892C7.31988 14.5906 7.76512 16.3525 8.64709 17.5913C9.52946 18.8221 10.742 19.4381 12.2916 19.4381H12.2957H12.3074C12.6275 19.4356 17.7933 19.2313 21.3896 8.93138C21.5278 8.32027 21.706 7.73395 21.924 7.17281C22.5147 5.65682 23.3509 4.3635 24.4326 3.30137C25.5147 2.23924 26.8034 1.42416 28.2995 0.854496C29.7952 0.285238 31.453 0 33.2785 0C35.0895 0 36.7392 0.284832 38.228 0.854496C39.7161 1.42416 40.9971 2.23924 42.0642 3.30137C43.1301 4.3635 43.9586 5.65642 44.5497 7.17281C45.1403 8.69612 45.4316 10.3962 45.4316 12.2892C45.4316 14.2054 45.1403 15.9213 44.5497 17.4605C43.9586 18.9923 43.1301 20.2926 42.0642 21.3624C40.9971 22.4319 39.7165 23.2547 38.228 23.832C36.7396 24.409 35.0895 24.7016 33.2785 24.7016C31.453 24.7016 29.7956 24.409 28.2995 23.832C26.803 23.2547 25.5147 22.4319 24.4326 21.3624C23.6673 20.605 23.0247 19.7327 22.5049 18.7449C22.5049 18.7449 21.7198 20.1755 19.8598 21.6639C19.4288 22.0552 18.9848 22.3973 18.529 22.6858C17.7163 23.2096 16.887 23.6252 16.0354 23.9174C15.4861 24.1059 14.9331 24.2595 14.3793 24.3757L14.3756 24.3761C14.0726 24.4395 13.7691 24.4919 13.4653 24.533C12.606 24.6483 11.769 24.702 10.9563 24.702C9.49826 24.702 8.10988 24.4249 6.78228 23.8706C5.45467 23.3168 4.28911 22.5091 3.28398 21.4546C2.27885 20.4011 1.48075 19.1 0.890072 17.5609C0.299393 16.0229 0 14.268 0 12.29C0 10.5668 0.260907 8.9582 0.775016 7.45033C1.28953 5.94938 2.04874 4.64874 3.05346 3.54882C4.05899 2.4485 5.30193 1.57897 6.78268 0.94795C8.26343 0.316931 9.97429 0.000812054 11.923 0.000812054C13.7955 0.000812054 15.4371 0.301084 16.8485 0.909349C18.2604 1.50908 19.5341 2.39405 20.6693 3.55614L18.7826 6.05665ZM33.2785 19.384C34.9205 19.384 36.1331 18.8075 36.9073 17.6454C37.6831 16.4837 38.066 14.7142 38.066 12.336C38.066 9.96628 37.6831 8.20406 36.9073 7.0497C36.1331 5.89574 34.9205 5.31836 33.2785 5.31836C31.5912 5.31836 30.3559 5.89574 29.5732 7.0497C28.7905 8.20406 28.3992 9.96628 28.3992 12.336C28.3992 14.7146 28.7905 16.4837 29.5732 17.6454C30.3555 18.8075 31.5912 19.384 33.2785 19.384Z"/>
           <!-- fill reveal (bottom-to-top wipe, same as 'g') -->
           <path class="co-fill-reveal" fill-rule="evenodd" clip-rule="evenodd" d="M18.7826 6.05665C18.5675 6.31791 18.3605 6.52635 18.1607 6.68035C17.961 6.82622 17.6774 6.90302 17.3092 6.90302C16.9559 6.90302 16.6415 6.8185 16.3575 6.64907C16.0735 6.48004 15.751 6.29516 15.3982 6.08793C15.0453 5.87949 14.6313 5.6877 14.1556 5.51827C13.68 5.34883 13.0893 5.26432 12.3832 5.26432C11.5085 5.26432 10.7566 5.42563 10.1201 5.74906C9.48327 6.07209 8.95377 6.53367 8.53973 7.13421C8.12568 7.73395 7.81819 8.47305 7.61927 9.34258C7.41954 10.2194 7.31988 11.197 7.31988 12.2892C7.31988 14.5906 7.76512 16.3525 8.64709 17.5913C9.52946 18.8221 10.742 19.4381 12.2916 19.4381H12.2957H12.3074C12.6275 19.4356 17.7933 19.2313 21.3896 8.93138C21.5278 8.32027 21.706 7.73395 21.924 7.17281C22.5147 5.65682 23.3509 4.3635 24.4326 3.30137C25.5147 2.23924 26.8034 1.42416 28.2995 0.854496C29.7952 0.285238 31.453 0 33.2785 0C35.0895 0 36.7392 0.284832 38.228 0.854496C39.7161 1.42416 40.9971 2.23924 42.0642 3.30137C43.1301 4.3635 43.9586 5.65642 44.5497 7.17281C45.1403 8.69612 45.4316 10.3962 45.4316 12.2892C45.4316 14.2054 45.1403 15.9213 44.5497 17.4605C43.9586 18.9923 43.1301 20.2926 42.0642 21.3624C40.9971 22.4319 39.7165 23.2547 38.228 23.832C36.7396 24.409 35.0895 24.7016 33.2785 24.7016C31.453 24.7016 29.7956 24.409 28.2995 23.832C26.803 23.2547 25.5147 22.4319 24.4326 21.3624C23.6673 20.605 23.0247 19.7327 22.5049 18.7449C22.5049 18.7449 21.7198 20.1755 19.8598 21.6639C19.4288 22.0552 18.9848 22.3973 18.529 22.6858C17.7163 23.2096 16.887 23.6252 16.0354 23.9174C15.4861 24.1059 14.9331 24.2595 14.3793 24.3757L14.3756 24.3761C14.0726 24.4395 13.7691 24.4919 13.4653 24.533C12.606 24.6483 11.769 24.702 10.9563 24.702C9.49826 24.702 8.10988 24.4249 6.78228 23.8706C5.45467 23.3168 4.28911 22.5091 3.28398 21.4546C2.27885 20.4011 1.48075 19.1 0.890072 17.5609C0.299393 16.0229 0 14.268 0 12.29C0 10.5668 0.260907 8.9582 0.775016 7.45033C1.28953 5.94938 2.04874 4.64874 3.05346 3.54882C4.05899 2.4485 5.30193 1.57897 6.78268 0.94795C8.26343 0.316931 9.97429 0.000812054 11.923 0.000812054C13.7955 0.000812054 15.4371 0.301084 16.8485 0.909349C18.2604 1.50908 19.5341 2.39405 20.6693 3.55614L18.7826 6.05665ZM33.2785 19.384C34.9205 19.384 36.1331 18.8075 36.9073 17.6454C37.6831 16.4837 38.066 14.7142 38.066 12.336C38.066 9.96628 37.6831 8.20406 36.9073 7.0497C36.1331 5.89574 34.9205 5.31836 33.2785 5.31836C31.5912 5.31836 30.3559 5.89574 29.5732 7.0497C28.7905 8.20406 28.3992 9.96628 28.3992 12.336C28.3992 14.7146 28.7905 16.4837 29.5732 17.6454C30.3555 18.8075 31.5912 19.384 33.2785 19.384Z"/>
+                  <rect class="co-shimmer-rect" x="-15" y="-1" width="16" height="27" fill="url(#coShimmerGrad)" clip-path="url(#coClip)"/>
         </svg>
       </div>
     </div>
@@ -288,6 +339,19 @@ html, body {
       <div class="gmark" aria-hidden="true">
         <img class="g-ghost" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgOCA0MiA1MyIgZmlsbD0ibm9uZSI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNDAuOTEzMiA4Ljk5NTc4QzMxLjkyNzUgOC45OTU3OCAyNC41NTE2IDguNjkxMDUgMTcuMjEyMSA5LjA2OTgzQzcuMjgzMDcgOS41ODIxNiAwLjI1MzE3NiAxNy4yMzE4IDAuMDA2MTE4NzQgMjcuMTMyM0MtMC4yMjY5NzcgMzYuNDkyIDYuMjI0NDMgNDQuNDQ1NyAxNS4xNDUyIDQ1Ljc5NjNDMjYuMzI5NSA0Ny40OTA1IDM1LjczNDEgNDIuNDMxNiAzOC4wMzcxIDMyLjc1ODJDMzkuMTkyMyAyNy45MDA4IDM4LjE1ODUgMjIuNzg2NyAzNy4zNTY2IDE4Ljc2MjdDMzguNTYyOCAxNC44NDY4IDM5LjYyOTkgMTIuOTAzOCA0MC45MTMyIDguOTk1NzhaTTE5LjUzMTUgMzcuNDM1M0MxNC4wMDIyIDM3LjU2NjQgOS43MDE0NCAzMy40NTIgOS42Njc0NCAyNy42NjA0QzkuNjM0MDYgMjEuODUgMTMuOTM3OCAxNy41MTExIDE5LjMxMjQgMTcuNTkzQzI0LjYwMzIgMTcuNjczNyAyOC43MzA5IDIxLjc4MDggMjguNzczNCAyNy40NDkyQzI4LjgxNzEgMzMuMTc0NiAyNC44MDUzIDM3LjMwODQgMTkuNTMxNSAzNy40MzUzWiIgZmlsbD0iIzAwMUU0QyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4LjE0MzYgNTEuODg2NEMxMS4yNzY0IDUxLjgzNDggOS41NzU1MiA1MS44MzYgMi41NjIwMSA1MS44MzZDMi45Njg3MSA1Ni4zMzU4IDUuMTI5MSA1OS42OTMyIDkuMTM2MDMgNTkuODE4OUgyOS4zMTM0QzM1LjM2NDcgNTkuNjI3NyAzNy45OTE5IDUzLjcyMDggMzguNDQ0OCA0OC42MTgyQzM0LjMwNjcgNDguNjE4MiAzMy40NjU0IDQ4LjYyNjcgMjkuNzM5NSA0OC42MjY3QzI4LjMxIDQ4LjYyNjcgMjcuNjMzMSA1MS44NDkzIDI2LjEyODMgNTEuODQ5M0MyMy45MjE4IDUxLjg0OTMgMjAuNTMxIDUxLjg2ODEgMTguMTQzNiA1MS44ODY0WiIgZmlsbD0iIzAwMUU0QyIvPgo8L3N2Zz4=" alt="">
         <img class="g-fill"  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgOCA0MiA1MyIgZmlsbD0ibm9uZSI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNDAuOTEzMiA4Ljk5NTc4QzMxLjkyNzUgOC45OTU3OCAyNC41NTE2IDguNjkxMDUgMTcuMjEyMSA5LjA2OTgzQzcuMjgzMDcgOS41ODIxNiAwLjI1MzE3NiAxNy4yMzE4IDAuMDA2MTE4NzQgMjcuMTMyM0MtMC4yMjY5NzcgMzYuNDkyIDYuMjI0NDMgNDQuNDQ1NyAxNS4xNDUyIDQ1Ljc5NjNDMjYuMzI5NSA0Ny40OTA1IDM1LjczNDEgNDIuNDMxNiAzOC4wMzcxIDMyLjc1ODJDMzkuMTkyMyAyNy45MDA4IDM4LjE1ODUgMjIuNzg2NyAzNy4zNTY2IDE4Ljc2MjdDMzguNTYyOCAxNC44NDY4IDM5LjYyOTkgMTIuOTAzOCA0MC45MTMyIDguOTk1NzhaTTE5LjUzMTUgMzcuNDM1M0MxNC4wMDIyIDM3LjU2NjQgOS43MDE0NCAzMy40NTIgOS42Njc0NCAyNy42NjA0QzkuNjM0MDYgMjEuODUgMTMuOTM3OCAxNy41MTExIDE5LjMxMjQgMTcuNTkzQzI0LjYwMzIgMTcuNjczNyAyOC43MzA5IDIxLjc4MDggMjguNzczNCAyNy40NDkyQzI4LjgxNzEgMzMuMTc0NiAyNC44MDUzIDM3LjMwODQgMTkuNTMxNSAzNy40MzUzWiIgZmlsbD0iIzAwMUU0QyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4LjE0MzYgNTEuODg2NEMxMS4yNzY0IDUxLjgzNDggOS41NzU1MiA1MS44MzYgMi41NjIwMSA1MS44MzZDMi45Njg3MSA1Ni4zMzU4IDUuMTI5MSA1OS42OTMyIDkuMTM2MDMgNTkuODE4OUgyOS4zMTM0QzM1LjM2NDcgNTkuNjI3NyAzNy45OTE5IDUzLjcyMDggMzguNDQ0OCA0OC42MTgyQzM0LjMwNjcgNDguNjE4MiAzMy40NjU0IDQ4LjYyNjcgMjkuNzM5NSA0OC42MjY3QzI4LjMxIDQ4LjYyNjcgMjcuNjMzMSA1MS44NDkzIDI2LjEyODMgNTEuODQ5M0MyMy45MjE4IDUxLjg0OTMgMjAuNTMxIDUxLjg2ODEgMTguMTQzNiA1MS44ODY0WiIgZmlsbD0iIzAwMUU0QyIvPgo8L3N2Zz4=" alt="">
+        <svg class="g-shimmer-svg" viewBox="0 8 42 53" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="gClip">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M40.9132 8.99578C31.9275 8.99578 24.5516 8.69105 17.2121 9.06983C7.28307 9.58216 0.253176 17.2318 0.00611874 27.1323C-0.226977 36.492 6.22443 44.4457 15.1452 45.7963C26.3295 47.4905 35.7341 42.4316 38.0371 32.7582C39.1923 27.9008 38.1585 22.7867 37.3566 18.7627C38.5628 14.8468 39.6299 12.9038 40.9132 8.99578ZM19.5315 37.4353C14.0022 37.5664 9.70144 33.452 9.66744 27.6604C9.63406 21.85 13.9378 17.5111 19.3124 17.593C24.6032 17.6737 28.7309 21.7808 28.7734 27.4492C28.8171 33.1746 24.8053 37.3084 19.5315 37.4353Z M18.1436 51.8864C11.2764 51.8348 9.57552 51.836 2.56201 51.836C2.96871 56.3358 5.1291 59.6932 9.13603 59.8189H29.3134C35.3647 59.6277 37.9919 53.7208 38.4448 48.6182C34.3067 48.6182 33.4654 48.6267 29.7395 48.6267C28.31 48.6267 27.6331 51.8493 26.1283 51.8493C23.9218 51.8493 20.531 51.8681 18.1436 51.8864Z"/>
+            </clipPath>
+            <linearGradient id="gShimmerGrad" x1="0" y1="0.5" x2="1" y2="0.5">
+              <stop offset="0%"   stop-color="white" stop-opacity="0"/>
+              <stop offset="50%"  stop-color="white" stop-opacity="0.75"/>
+              <stop offset="100%" stop-color="white" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect class="g-shimmer-rect" x="-50" y="8" width="50" height="53" fill="url(#gShimmerGrad)" clip-path="url(#gClip)"/>
+        </svg>
       </div>
     </div>
 
